@@ -69,3 +69,134 @@
 </div>
 </body>
 </html>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Gaming Hub — Play HTML5 Games</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="site-header">
+  <h1>🎮 Gaming Hub</h1>
+  <p>Tap or click a game to play — mobile friendly.</p>
+</header>
+<main class="container">
+  <section class="gallery">
+    <div class="card">
+      <img src="https://via.placeholder.com/400x220/06b6d4/ffffff?text=Snake" alt="Snake">
+      <h3>Snake</h3>
+      <p>Classic snake with touch buttons + restart.</p>
+      <a class="btn" href="games/snake.html" target="_blank">Play</a>
+    </div>
+    <div class="card">
+      <img src="https://via.placeholder.com/400x220/fbbf24/000000?text=Flappy" alt="Flappy">
+      <h3>Flappy Clone</h3>
+      <p>Tap anywhere or press space to flap.</p>
+      <a class="btn" href="games/flappy.html" target="_blank">Play</a>
+    </div>
+    <div class="card">
+      <img src="https://via.placeholder.com/400x220/ef4444/ffffff?text=Pong" alt="Pong">
+      <h3>Pong</h3>
+      <p>Move paddle with touch or mouse.</p>
+      <a class="btn" href="games/pong.html" target="_blank">Play</a>
+    </div>
+  </section>
+  <section class="about">
+    <h4>How to Play</h4>
+    <ul>
+      <li>Snake — Arrow keys / WASD or on-screen buttons.</li>
+      <li>Flappy — Tap / Click / Space to flap.</li>
+      <li>Pong — Drag or move pointer to control paddle.</li>
+    </ul>
+  </section>
+</main>
+<footer class="site-footer">Made with ❤️ — Gaming Hub</footer>
+</body>
+</html>
+<!doctype html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Snake</title>
+<style>
+body{margin:0;font-family:system-ui;background:#071033;color:#e6eef8;display:flex;flex-direction:column;align-items:center;min-height:100vh}
+.wrap{width:100%;max-width:520px;padding:16px}
+canvas{background:linear-gradient(180deg,#081432,#042033);display:block;margin:auto;border-radius:8px}
+.controls{display:flex;justify-content:center;gap:8px;margin-top:10px}
+.ctrl-btn{padding:10px 12px;border-radius:8px;border:0;background:#06b6d4;color:#04202b;font-weight:700}
+.info{display:flex;justify-content:space-between;margin-top:8px;color:#cfe9f6}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h2 style="text-align:center;margin:6px 0">Snake</h2>
+<canvas id="c" width="400" height="400"></canvas>
+<div class="info"><div id="score">Score: 0</div><div><button id="restart" class="ctrl-btn">Restart</button></div></div>
+<div class="controls">
+<button class="ctrl-btn" id="left">◀</button>
+<button class="ctrl-btn" id="up">▲</button>
+<button class="ctrl-btn" id="down">▼</button>
+<button class="ctrl-btn" id="right">▶</button>
+</div>
+</div>
+<script>
+const canvas=document.getElementById('c'),ctx=canvas.getContext('2d');
+const size=20,cols=canvas.width/size,rows=canvas.height/size;
+let snake=[{x:10,y:10}],dir={x:1,y:0},food=spawn(),score=0,spd=120,iv;
+function spawn(){while(true){let f={x:Math.floor(Math.random()*cols),y:Math.floor(Math.random()*rows)};if(!snake.some(s=>s.x===f.x&&s.y===f.y))return f;}}
+function draw(){ctx.clearRect(0,0,canvas.width,canvas.height);
+for(let x=0;x<cols;x++)for(let y=0;y<rows;y++){ctx.fillStyle=(x+y)%2? '#07122a':'#081b33';ctx.fillRect(x*size,y*size,size,size);}
+ctx.fillStyle='#f97316';ctx.fillRect(food.x*size+4,food.y*size+4,size-8,size-8);
+snake.forEach((s,i)=>{ctx.fillStyle=i===0? '#06b6d4':'#60a5fa';ctx.fillRect(s.x*size+2,s.y*size+2,size-4,size-4)});
+}
+function step(){let head={x:(snake[0].x+dir.x+cols)%cols,y:(snake[0].y+dir.y+rows)%rows};
+if(snake.some(seg=>seg.x===head.x&&seg.y===head.y)){clearInterval(iv);setTimeout(()=>alert('Game Over — Score: '+score),50);return;}
+snake.unshift(head);
+if(head.x===food.x&&head.y===food.y){score++;document.getElementById('score').textContent='Score: '+score;food=spawn();if(score%5===0 && spd>40){spd=Math.max(40,spd-10);restart();}}
+else snake.pop();
+draw();}
+function restart(){clearInterval(iv);iv=setInterval(step,spd);}
+document.addEventListener('keydown',e=>{if(e.key==='ArrowUp'||e.key==='w')dir={x:0,y:-1};if(e.key==='ArrowDown'||e.key==='s')dir={x:0,y:1};if(e.key==='ArrowLeft'||e.key==='a')dir={x:-1,y:0};if(e.key==='ArrowRight'||e.key==='d')dir={x:1,y:0};});
+document.getElementById('up').addEventListener('click',()=>dir={x:0,y:-1});
+document.getElementById('down').addEventListener('click',()=>dir={x:0,y:1});
+document.getElementById('left').addEventListener('click',()=>dir={x:-1,y:0});
+document.getElementById('right').addEventListener('click',()=>dir={x:1,y:0});
+document.getElementById('restart').addEventListener('click',()=>{snake=[{x:10,y:10}];dir={x:1,y:0};food=spawn();score=0;spd=120;document.getElementById('score').textContent='Score: 0';restart();});
+restart();draw();
+</script>
+</body>
+</html>
+<!doctype html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Flappy</title>
+<style>
+body{margin:0;background:#70c5ce;font-family:system-ui;display:flex;align-items:center;justify-content:center;height:100vh}
+canvas{border-radius:8px;background:linear-gradient(#70c5ce,#8ad7e6)}
+</style>
+</head>
+<body>
+<canvas id="f" width="320" height="480"></canvas>
+<script>
+const cvs=document.getElementById('f'),ctx=cvs.getContext('2d');
+let frames=0,gravity=0.22,velocity=0,score=0,gameOver=false;
+let bird={x:60,y:150,w:26,h:20,jump:5,draw(){ctx.fillStyle='#ffdd57';ctx.fillRect(this.x,this.y,this.w,this.h)},flap(){velocity=-this.jump}};
+let pipes=[];const gap=120;
+function reset(){pipes=[];frames=0;velocity=0;score=0;gameOver=false;bird.y=150;}
+function loop(){
+  frames++;
+  ctx.clearRect(0,0,cvs.width,cvs.height);
+  ctx.fillStyle='#70c5ce';
+  ctx.fillRect(0,0,cvs.width,cvs.height);
+  if(frames%90===0){let h=50+Math.random()*200;pipes.push({x:cvs.width,top:h})}
+  for(let i=0;i<pipes.length;i++){
+    let p=pipes[i];
+    p.x-=2;
+    ctx.fillStyle='#2f9e44';
+    ctx.fillRect(p.x,0,48,p.top);
+    ctx.fillRect(p.x,p.top+gap,48,cvs.height);
+    if(p.x+48<0)pipes.shift();
+    if(bird.x+bird.w>p.x&&bird.x<p.x+48&&(bird.y< p.top || bird
