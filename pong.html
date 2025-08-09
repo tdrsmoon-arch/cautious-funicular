@@ -1,0 +1,35 @@
+<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><title>Pong</title>
+<style>body{margin:0;background:#000;display:flex;align-items:center;justify-content:center;height:100vh}canvas{background:#021;display:block;border-radius:8px}</style></head><body>
+<canvas id="p" width="720" height="480"></canvas>
+<script>
+const cvs=document.getElementById('p'),ctx=cvs.getContext('2d');
+const user={x:10,y:190,w:12,h:100,score:0},comp={x:cvs.width-22,y:190,w:12,h:100,score:0};
+let ball={x:cvs.width/2,y:cvs.height/2,r:10,velX:6,velY:4,speed:6};
+function drawRect(x,y,w,h,color){ctx.fillStyle=color;ctx.fillRect(x,y,w,h)}
+function drawCircle(x,y,r,color){ctx.fillStyle=color;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.closePath();ctx.fill()}
+function draw(){drawRect(0,0,cvs.width,cvs.height,'black');drawRect(user.x,user.y,user.w,user.h,'white');drawRect(comp.x,comp.y,comp.w,comp.h,'white');drawCircle(ball.x,ball.y,ball.r,'white');ctx.font='36px sans-serif';ctx.fillStyle='white';ctx.fillText(user.score, cvs.width/4,50);ctx.fillText(comp.score, 3*cvs.width/4,50)}
+function resetBall(){ball.x=cvs.width/2;ball.y=cvs.height/2;ball.velX = -ball.velX; ball.speed=6;}
+function collision(b,p){p.top=p.y; p.bottom=p.y+p.h; p.left=p.x; p.right=p.x+p.w; b.top=b.y-b.r; b.bottom=b.y+b.r; b.left=b.x-b.r; b.right=b.x+b.r; return b.right>p.left && b.left<p.right && b.bottom>p.top && b.top<p.bottom;}
+function update(){
+ball.x += ball.velX; ball.y += ball.velY;
+if(ball.y - ball.r < 0 || ball.y + ball.r > cvs.height) ball.velY = -ball.velY;
+let player = (ball.x < cvs.width/2) ? user : comp;
+if(collision(ball, player)){
+let collidePoint = ball.y - (player.y + player.h/2);
+collidePoint = collidePoint / (player.h/2);
+let angleRad = (Math.PI/4) * collidePoint;
+let direction = (ball.x < cvs.width/2) ? 1 : -1;
+ball.velX = direction * ball.speed * Math.cos(angleRad);
+ball.velY = ball.speed * Math.sin(angleRad);
+ball.speed += 0.2;
+}
+if(ball.x - ball.r < 0){comp.score++; resetBall();}
+if(ball.x + ball.r > cvs.width){user.score++; resetBall();}
+comp.y += (ball.y - (comp.y + comp.h/2)) * 0.09;
+}
+cvs.addEventListener('mousemove', e=>{let rect=cvs.getBoundingClientRect(); user.y = e.clientY - rect.top - user.h/2; if(user.y < 0) user.y = 0; if(user.y + user.h > cvs.height) user.y = cvs.height - user.h;});
+cvs.addEventListener('touchmove', e=>{e.preventDefault(); let touch = e.touches[0]; let rect=cvs.getBoundingClientRect(); user.y = touch.clientY - rect.top - user.h/2; if(user.y < 0) user.y = 0; if(user.y + user.h > cvs.height) user.y = cvs.height - user.h;}, {passive:false});
+function game(){update();draw(); requestAnimationFrame(game);}
+game();
+</script>
+</body></html>
